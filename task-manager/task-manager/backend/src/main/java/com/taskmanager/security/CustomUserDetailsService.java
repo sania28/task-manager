@@ -3,7 +3,6 @@ package com.taskmanager.security;
 import com.taskmanager.model.User;
 import com.taskmanager.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,7 +22,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("No user found with email: " + email));
 
-        List<GrantedAuthority> authorities = user.getRoles().stream()
+        List<SimpleGrantedAuthority> authorities = user.getRoles().stream()
                 .map(SimpleGrantedAuthority::new)
                 .toList();
 
