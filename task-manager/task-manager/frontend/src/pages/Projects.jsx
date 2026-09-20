@@ -42,7 +42,6 @@ const initial = displayName.charAt(0).toUpperCase()
 
 return ( <div className="app-layout"> <Sidebar />
 
-```
   <main className="main-content">
     <header className="static-navbar">
       <div>
@@ -221,7 +220,6 @@ return ( <div className="app-layout"> <Sidebar />
     </div>
   </main>
 </div>
-```
 
 )
 }
