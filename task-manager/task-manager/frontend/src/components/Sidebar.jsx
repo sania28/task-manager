@@ -2,13 +2,41 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
 const menuItems = [
-{ path: '/dashboard', icon: '⌂', label: 'Dashboard' },
-{ path: '/tasks', icon: '✓', label: 'Tasks' },
-{ path: '/projects', icon: '▣', label: 'Projects' },
-{ path: '/team', icon: '♙', label: 'Team' },
-{ path: '/messages', icon: '◌', label: 'Messages' },
-{ path: '/settings', icon: '⚙', label: 'Settings' },
-{ path: '/notifications', icon: '◉', label: 'Notifications' },
+{
+path: '/dashboard',
+icon: '⌂',
+label: 'Dashboard',
+},
+{
+path: '/tasks',
+icon: '✓',
+label: 'Tasks',
+},
+{
+path: '/projects',
+icon: '▣',
+label: 'Projects',
+},
+{
+path: '/team',
+icon: '♙',
+label: 'Team',
+},
+{
+path: '/messages',
+icon: '◌',
+label: 'Messages',
+},
+{
+path: '/settings',
+icon: '⚙',
+label: 'Settings',
+},
+{
+path: '/notifications',
+icon: '◉',
+label: 'Notifications',
+},
 ]
 
 export default function Sidebar() {
@@ -22,7 +50,6 @@ navigate('/login')
 
 return ( <aside className="sidebar"> <div className="sidebar-logo"> <div className="logo-mark">T</div>
 
-```
     <div>
       <h1>TaskFlow</h1>
       <span>Task Manager</span>
@@ -41,7 +68,10 @@ return ( <aside className="sidebar"> <div className="sidebar-logo"> <div classNa
           `sidebar-link ${isActive ? 'active' : ''}`
         }
       >
-        <span className="sidebar-icon">{item.icon}</span>
+        <span className="sidebar-icon">
+          {item.icon}
+        </span>
+
         <span>{item.label}</span>
       </NavLink>
     ))}
@@ -58,8 +88,8 @@ return ( <aside className="sidebar"> <div className="sidebar-logo"> <div classNa
     </div>
 
     <button
-      className="sidebar-logout"
       type="button"
+      className="sidebar-logout"
       onClick={handleLogout}
     >
       <span className="sidebar-icon">↪</span>
@@ -67,7 +97,6 @@ return ( <aside className="sidebar"> <div className="sidebar-logo"> <div classNa
     </button>
   </div>
 </aside>
-```
 
 )
 }
