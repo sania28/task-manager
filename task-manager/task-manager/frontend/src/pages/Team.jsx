@@ -1,4 +1,4 @@
-:::writing{variant="standard" id="58321" title="Team.jsx"}
+writing{variant="standard" id="58321" title="Team.jsx"}
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
@@ -307,4 +307,3 @@ export default function Team() {
     </div>
   )
 }
-:::
