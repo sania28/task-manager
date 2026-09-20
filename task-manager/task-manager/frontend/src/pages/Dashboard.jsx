@@ -1,5 +1,6 @@
 ```jsx
 import { useEffect, useState, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Sidebar from '../components/Sidebar'
 import TaskCard from '../components/TaskCard'
@@ -23,6 +24,7 @@ const NEXT_STATUS = {
 
 export default function Dashboard() {
   const { user } = useAuth()
+  const navigate = useNavigate()
 
   const [tasks, setTasks] = useState([])
   const [filter, setFilter] = useState('ALL')
@@ -31,6 +33,8 @@ export default function Dashboard() {
   const [showForm, setShowForm] = useState(false)
   const [editingTask, setEditingTask] = useState(null)
   const [connected, setConnected] = useState(false)
+
+  const displayName = user?.fullName || user?.name || 'User'
 
   const loadTasks = useCallback(async () => {
     setLoading(true)
@@ -119,6 +123,7 @@ export default function Dashboard() {
 
     try {
       await taskApi.remove(task.id)
+
       setTasks((current) =>
         current.filter((item) => item.id !== task.id)
       )
@@ -145,14 +150,23 @@ export default function Dashboard() {
   }
 
   const totalTasks = tasks.length
-  const todoTasks = tasks.filter((task) => task.status === 'TODO').length
+
+  const todoTasks = tasks.filter(
+    (task) => task.status === 'TODO'
+  ).length
+
   const progressTasks = tasks.filter(
     (task) => task.status === 'IN_PROGRESS'
   ).length
-  const doneTasks = tasks.filter((task) => task.status === 'DONE').length
+
+  const doneTasks = tasks.filter(
+    (task) => task.status === 'DONE'
+  ).length
 
   const completion =
-    totalTasks > 0 ? Math.round((doneTasks / totalTasks) * 100) : 0
+    totalTasks > 0
+      ? Math.round((doneTasks / totalTasks) * 100)
+      : 0
 
   const visibleTasks =
     filter === 'ALL'
@@ -167,23 +181,29 @@ export default function Dashboard() {
         <Navbar connected={connected} />
 
         <div className="dashboard-page">
+
           {/* Hero Section */}
           <section className="dashboard-hero">
             <div className="hero-content">
-              <span className="hero-badge">TASKFLOW WORKSPACE</span>
+              <span className="hero-badge">
+                TASKFLOW WORKSPACE
+              </span>
 
               <h2>
-                Welcome back
-                {user?.name ? `, ${user.name}` : ''} 👋
+                Welcome back, {displayName} 👋
               </h2>
 
               <p>
-                Organize your work, track your progress and complete your
-                tasks one step at a time.
+                Organize your work, track your progress and
+                complete your tasks one step at a time.
               </p>
             </div>
 
-            <button className="hero-action" onClick={openCreateForm}>
+            <button
+              type="button"
+              className="hero-action"
+              onClick={openCreateForm}
+            >
               <span>+</span>
               New Task
             </button>
@@ -193,7 +213,10 @@ export default function Dashboard() {
           <section className="overview-section">
             <div className="section-heading">
               <div>
-                <span className="section-label">OVERVIEW</span>
+                <span className="section-label">
+                  OVERVIEW
+                </span>
+
                 <h3>Your productivity</h3>
               </div>
 
@@ -205,6 +228,7 @@ export default function Dashboard() {
             <div className="stats-grid">
               <div className="stat-card stat-card-total">
                 <div className="stat-icon">▣</div>
+
                 <div>
                   <span>Total Tasks</span>
                   <strong>{totalTasks}</strong>
@@ -213,6 +237,7 @@ export default function Dashboard() {
 
               <div className="stat-card">
                 <div className="stat-icon">○</div>
+
                 <div>
                   <span>To Do</span>
                   <strong>{todoTasks}</strong>
@@ -221,6 +246,7 @@ export default function Dashboard() {
 
               <div className="stat-card">
                 <div className="stat-icon">◐</div>
+
                 <div>
                   <span>In Progress</span>
                   <strong>{progressTasks}</strong>
@@ -229,6 +255,7 @@ export default function Dashboard() {
 
               <div className="stat-card">
                 <div className="stat-icon">✓</div>
+
                 <div>
                   <span>Completed</span>
                   <strong>{doneTasks}</strong>
@@ -241,11 +268,18 @@ export default function Dashboard() {
           <section className="tasks-section">
             <div className="section-heading tasks-heading">
               <div>
-                <span className="section-label">WORKSPACE</span>
+                <span className="section-label">
+                  WORKSPACE
+                </span>
+
                 <h3>My Tasks</h3>
               </div>
 
-              <button className="outline-action" onClick={openCreateForm}>
+              <button
+                type="button"
+                className="outline-action"
+                onClick={openCreateForm}
+              >
                 + Add Task
               </button>
             </div>
@@ -255,6 +289,7 @@ export default function Dashboard() {
                 {FILTERS.map((item) => (
                   <button
                     key={item.key}
+                    type="button"
                     className={`filter-chip ${
                       filter === item.key ? 'active' : ''
                     }`}
@@ -271,7 +306,11 @@ export default function Dashboard() {
               </span>
             </div>
 
-            {error && <div className="error-banner">{error}</div>}
+            {error && (
+              <div className="error-banner">
+                {error}
+              </div>
+            )}
 
             {loading ? (
               <div className="loading-state">
@@ -285,14 +324,22 @@ export default function Dashboard() {
                 <h3>
                   {filter === 'ALL'
                     ? 'No tasks yet'
-                    : `No ${FILTERS.find((item) => item.key === filter)?.label.toLowerCase()} tasks`}
+                    : `No ${
+                        FILTERS.find(
+                          (item) => item.key === filter
+                        )?.label.toLowerCase()
+                      } tasks`}
                 </h3>
 
                 <p>
                   Create a task and start organizing your work.
                 </p>
 
-                <button className="hero-action" onClick={openCreateForm}>
+                <button
+                  type="button"
+                  className="hero-action"
+                  onClick={openCreateForm}
+                >
                   + Create Task
                 </button>
               </div>
@@ -315,56 +362,94 @@ export default function Dashboard() {
           <section className="quick-section">
             <div className="section-heading">
               <div>
-                <span className="section-label">EXPLORE</span>
+                <span className="section-label">
+                  EXPLORE
+                </span>
+
                 <h3>Quick Sections</h3>
               </div>
             </div>
 
             <div className="quick-grid">
-              <div className="quick-card">
+
+              <button
+                type="button"
+                className="quick-card"
+                onClick={() => navigate('/projects')}
+              >
                 <div className="quick-card-icon">▣</div>
+
                 <div>
                   <h4>Projects</h4>
-                  <p>Keep your projects organized in one place.</p>
+                  <p>
+                    Keep your projects organized in one place.
+                  </p>
                 </div>
-                <span className="quick-arrow">→</span>
-              </div>
 
-              <div className="quick-card">
+                <span className="quick-arrow">→</span>
+              </button>
+
+              <button
+                type="button"
+                className="quick-card"
+                onClick={() => navigate('/team')}
+              >
                 <div className="quick-card-icon">♙</div>
+
                 <div>
                   <h4>Team</h4>
-                  <p>View your team workspace and members.</p>
+                  <p>
+                    View your team workspace and members.
+                  </p>
                 </div>
-                <span className="quick-arrow">→</span>
-              </div>
 
-              <div className="quick-card">
+                <span className="quick-arrow">→</span>
+              </button>
+
+              <button
+                type="button"
+                className="quick-card"
+                onClick={() => navigate('/messages')}
+              >
                 <div className="quick-card-icon">◌</div>
+
                 <div>
                   <h4>Messages</h4>
-                  <p>Stay connected with your workspace.</p>
+                  <p>
+                    Stay connected with your workspace.
+                  </p>
                 </div>
+
                 <span className="quick-arrow">→</span>
-              </div>
+              </button>
+
             </div>
           </section>
 
           {/* Productivity Section */}
           <section className="productivity-section">
             <div className="productivity-content">
-              <span className="section-label">PRODUCTIVITY</span>
-              <h3>Stay focused. One task at a time.</h3>
+              <span className="section-label">
+                PRODUCTIVITY
+              </span>
+
+              <h3>
+                Stay focused. One task at a time.
+              </h3>
+
               <p>
-                Small progress every day can turn into big results.
-                Keep your priorities clear and keep moving forward.
+                Small progress every day can turn into big
+                results. Keep your priorities clear and keep
+                moving forward.
               </p>
             </div>
 
             <div className="productivity-progress">
               <div
                 className="progress-circle"
-                style={{ '--progress': `${completion}%` }}
+                style={{
+                  '--progress': `${completion}%`,
+                }}
               >
                 <span>{completion}%</span>
               </div>
@@ -372,6 +457,7 @@ export default function Dashboard() {
               <small>Completion</small>
             </div>
           </section>
+
         </div>
       </main>
 
