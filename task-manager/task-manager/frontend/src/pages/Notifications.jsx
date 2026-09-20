@@ -84,7 +84,6 @@ if (filter === 'Unread') {
 return notification.unread
 }
 
-```
   if (filter === 'Tasks') {
     return notification.type === 'task'
   }
@@ -99,7 +98,6 @@ return notification.unread
 
   return true
 }
-```
 
 )
 
@@ -129,7 +127,6 @@ unread: false,
 
 return ( <div className="app-layout"> <Sidebar />
 
-```
   <main className="main-content">
     <header className="static-navbar">
       <div className="static-navbar-left">
@@ -332,7 +329,6 @@ return ( <div className="app-layout"> <Sidebar />
     </div>
   </main>
 </div>
-```
 
 )
 }
