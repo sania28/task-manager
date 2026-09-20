@@ -1,32 +1,120 @@
-const STATUS_LABELS = {
-  TODO: 'To Do',
-  IN_PROGRESS: 'In Progress',
-  DONE: 'Done',
-}
+```jsx
+export default function TaskCard({
+  task,
+  onEdit,
+  onDelete,
+  onToggleStatus,
+}) {
+  const statusConfig = {
+    TODO: {
+      label: 'To Do',
+      className: 'status-todo',
+      icon: '○',
+    },
+    IN_PROGRESS: {
+      label: 'In Progress',
+      className: 'status-progress',
+      icon: '◐',
+    },
+    DONE: {
+      label: 'Completed',
+      className: 'status-done',
+      icon: '✓',
+    },
+  }
 
-export default function TaskCard({ task, onEdit, onDelete, onToggleStatus }) {
+  const status = statusConfig[task.status] || statusConfig.TODO
+
+  const formatDate = (value) => {
+    if (!value) return null
+
+    const date = new Date(value)
+
+    if (Number.isNaN(date.getTime())) return value
+
+    return date.toLocaleDateString('en-IN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    })
+  }
+
   return (
-    <div className={`task-card priority-${task.priority || 'MEDIUM'}`}>
-      <div className="task-title">
-        <span>{task.title}</span>
-        <span className={`badge badge-${task.status}`}>{STATUS_LABELS[task.status]}</span>
+    <article className="task-card">
+      <div className="task-card-top">
+        <span className={`task-status ${status.className}`}>
+          <span>{status.icon}</span>
+          {status.label}
+        </span>
+
+        <div className="task-menu">
+          <button
+            className="task-icon-button"
+            type="button"
+            onClick={() => onEdit(task)}
+            title="Edit task"
+            aria-label="Edit task"
+          >
+            ✎
+          </button>
+
+          <button
+            className="task-icon-button delete-button"
+            type="button"
+            onClick={() => onDelete(task)}
+            title="Delete task"
+            aria-label="Delete task"
+          >
+            ×
+          </button>
+        </div>
       </div>
-      {task.description && <div className="task-desc">{task.description}</div>}
-      <div className="task-meta">
-        <span>{task.priority} priority</span>
-        {task.dueDate && <span>Due {task.dueDate}</span>}
+
+      <div className="task-card-body">
+        <h3 className={task.status === 'DONE' ? 'completed-title' : ''}>
+          {task.title}
+        </h3>
+
+        {task.description && (
+          <p className="task-description">
+            {task.description}
+          </p>
+        )}
       </div>
-      <div className="task-actions">
-        <button className="btn btn-secondary" onClick={() => onToggleStatus(task)}>
-          {task.status === 'DONE' ? 'Reopen' : 'Advance'}
-        </button>
-        <button className="btn btn-secondary" onClick={() => onEdit(task)}>
-          Edit
-        </button>
-        <button className="btn btn-danger" onClick={() => onDelete(task)}>
-          Delete
+
+      <div className="task-card-footer">
+        <div className="task-date">
+          {task.dueDate ? (
+            <>
+              <span>▣</span>
+              <span>{formatDate(task.dueDate)}</span>
+            </>
+          ) : (
+            <span>No due date</span>
+          )}
+        </div>
+
+        <button
+          className={`status-action ${
+            task.status === 'DONE' ? 'completed-action' : ''
+          }`}
+          type="button"
+          onClick={() => onToggleStatus(task)}
+        >
+          {task.status === 'DONE' ? (
+            <>
+              <span>↻</span>
+              Reopen
+            </>
+          ) : (
+            <>
+              <span>✓</span>
+              {task.status === 'TODO' ? 'Start' : 'Complete'}
+            </>
+          )}
         </button>
       </div>
-    </div>
+    </article>
   )
 }
+```
