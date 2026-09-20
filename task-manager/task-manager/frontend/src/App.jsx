@@ -6,7 +6,6 @@ import ProtectedRoute from './components/ProtectedRoute'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
-
 import Projects from './pages/Projects'
 import Team from './pages/Team'
 import Messages from './pages/Messages'
@@ -40,8 +39,6 @@ export default function App() {
   return (
     <AuthProvider>
       <Routes>
-
-        {/* Public routes */}
         <Route
           path="/"
           element={<RootRedirect />}
@@ -57,7 +54,6 @@ export default function App() {
           element={<Register />}
         />
 
-        {/* Main task workspace */}
         <Route
           path="/dashboard"
           element={
@@ -76,7 +72,6 @@ export default function App() {
           }
         />
 
-        {/* Frontend-only workspace sections */}
         <Route
           path="/projects"
           element={
@@ -122,12 +117,10 @@ export default function App() {
           }
         />
 
-        {/* Unknown routes */}
         <Route
           path="*"
           element={<Navigate to="/" replace />}
         />
-
       </Routes>
     </AuthProvider>
   )
