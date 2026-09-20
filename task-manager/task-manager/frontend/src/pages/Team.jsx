@@ -1,309 +1,258 @@
-writing{variant="standard" id="58321" title="Team.jsx"}
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
 import { useAuth } from '../context/AuthContext'
 
-const teamMembers = [
-  {
-    id: 1,
-    name: 'Alex Morgan',
-    role: 'Frontend Developer',
-    department: 'Development',
-    status: 'Online',
-    projects: 4,
-    initials: 'AM',
-  },
-  {
-    id: 2,
-    name: 'Maya Patel',
-    role: 'UI/UX Designer',
-    department: 'Design',
-    status: 'Online',
-    projects: 3,
-    initials: 'MP',
-  },
-  {
-    id: 3,
-    name: 'Daniel Lee',
-    role: 'Backend Developer',
-    department: 'Development',
-    status: 'Away',
-    projects: 5,
-    initials: 'DL',
-  },
-  {
-    id: 4,
-    name: 'Jordan Kim',
-    role: 'Product Manager',
-    department: 'Product',
-    status: 'Offline',
-    projects: 6,
-    initials: 'JK',
-  },
-  {
-    id: 5,
-    name: 'Emma Wilson',
-    role: 'Frontend Developer',
-    department: 'Development',
-    status: 'Online',
-    projects: 2,
-    initials: 'EW',
-  },
-  {
-    id: 6,
-    name: 'Noah Carter',
-    role: 'Product Designer',
-    department: 'Design',
-    status: 'Away',
-    projects: 3,
-    initials: 'NC',
-  },
+const members = [
+{
+id: 1,
+name: 'Aarav Sharma',
+role: 'Project Manager',
+status: 'Online',
+tasks: 14,
+avatar: 'A',
+},
+{
+id: 2,
+name: 'Priya Singh',
+role: 'UI/UX Designer',
+status: 'Online',
+tasks: 9,
+avatar: 'P',
+},
+{
+id: 3,
+name: 'Rahul Kumar',
+role: 'Frontend Developer',
+status: 'Away',
+tasks: 12,
+avatar: 'R',
+},
+{
+id: 4,
+name: 'Neha Verma',
+role: 'Backend Developer',
+status: 'Offline',
+tasks: 7,
+avatar: 'N',
+},
+{
+id: 5,
+name: 'Vikash Gupta',
+role: 'QA Engineer',
+status: 'Online',
+tasks: 11,
+avatar: 'V',
+},
+{
+id: 6,
+name: 'Ananya Das',
+role: 'Product Designer',
+status: 'Away',
+tasks: 6,
+avatar: 'A',
+},
 ]
 
-const filters = ['All', 'Development', 'Design', 'Product']
-
 export default function Team() {
-  const { user, logout } = useAuth()
-  const navigate = useNavigate()
+const { user, logout } = useAuth()
+const navigate = useNavigate()
 
-  const [filter, setFilter] = useState('All')
-  const [search, setSearch] = useState('')
+const [search, setSearch] = useState('')
+const [filter, setFilter] = useState('All')
 
-  const displayName = user?.fullName || user?.name || 'User'
-  const initial = displayName.charAt(0).toUpperCase()
+const displayName = user?.fullName || user?.name || 'User'
+const initial = displayName.charAt(0).toUpperCase()
 
-  const filteredMembers = teamMembers.filter((member) => {
-    const matchesFilter =
-      filter === 'All' || member.department === filter
+const filteredMembers = members.filter((member) => {
+const matchesSearch =
+member.name.toLowerCase().includes(search.toLowerCase()) ||
+member.role.toLowerCase().includes(search.toLowerCase())
 
-    const searchValue = search.trim().toLowerCase()
+const matchesFilter =
+  filter === 'All' || member.status === filter
 
-    const matchesSearch =
-      !searchValue ||
-      member.name.toLowerCase().includes(searchValue) ||
-      member.role.toLowerCase().includes(searchValue)
+return matchesSearch && matchesFilter
 
-    return matchesFilter && matchesSearch
-  })
+})
 
-  const handleLogout = () => {
-    logout()
-    navigate('/login')
-  }
+const handleLogout = () => {
+logout()
+navigate('/login')
+}
 
-  return (
-    <div className="app-layout">
-      <Sidebar />
+return ( <div className="app-layout"> <Sidebar />
 
-      <main className="main-content">
-        <header className="static-navbar">
-          <div className="static-navbar-left">
-            <div className="static-brand-mark">T</div>
+  <main className="main-content">
+    <header className="static-navbar">
+      <div className="static-navbar-left">
+        <div className="static-brand-mark">T</div>
 
-            <div>
-              <strong>TaskFlow</strong>
-              <span>Workspace</span>
-            </div>
-          </div>
-
-          <div className="static-navbar-right">
-            <button
-              type="button"
-              className="navbar-icon-button"
-              onClick={() => navigate('/notifications')}
-              title="Notifications"
-              aria-label="Notifications"
-            >
-              ◉
-            </button>
-
-            <div className="navbar-divider"></div>
-
-            <div className="navbar-user">
-              <div className="navbar-avatar">{initial}</div>
-
-              <div className="navbar-user-info">
-                <strong>{displayName}</strong>
-                <span>Workspace member</span>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              className="navbar-logout"
-              onClick={handleLogout}
-              title="Log out"
-            >
-              <span>↪</span>
-              <span>Logout</span>
-            </button>
-          </div>
-        </header>
-
-        <div className="static-page">
-          <section className="static-page-hero">
-            <div>
-              <span className="section-label">WORKSPACE</span>
-
-              <h1>Team</h1>
-
-              <p>
-                See your workspace members, roles and current availability.
-              </p>
-            </div>
-
-            <button
-              type="button"
-              className="hero-action"
-              onClick={() => navigate('/messages')}
-            >
-              <span>◌</span>
-              Messages
-            </button>
-          </section>
-
-          <section className="team-toolbar">
-            <div className="page-filter-group">
-              {filters.map((item) => (
-                <button
-                  key={item}
-                  type="button"
-                  className={`filter-chip ${
-                    filter === item ? 'active' : ''
-                  }`}
-                  onClick={() => setFilter(item)}
-                >
-                  {item}
-                </button>
-              ))}
-            </div>
-
-            <div className="team-search">
-              <span>⌕</span>
-
-              <input
-                type="search"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search team members..."
-                aria-label="Search team members"
-              />
-            </div>
-          </section>
-
-          <div className="team-results-bar">
-            <div>
-              <span className="section-label">TEAM MEMBERS</span>
-              <h3>
-                {filteredMembers.length}{' '}
-                {filteredMembers.length === 1 ? 'member' : 'members'}
-              </h3>
-            </div>
-
-            <span className="team-workspace-badge">
-              Workspace
-            </span>
-          </div>
-
-          {filteredMembers.length === 0 ? (
-            <section className="empty-state enhanced-empty-state">
-              <div className="empty-icon">⌕</div>
-
-              <h3>No team members found</h3>
-
-              <p>
-                Try a different name, role or department.
-              </p>
-
-              <button
-                type="button"
-                className="outline-action"
-                onClick={() => {
-                  setSearch('')
-                  setFilter('All')
-                }}
-              >
-                Clear filters
-              </button>
-            </section>
-          ) : (
-            <section className="team-grid">
-              {filteredMembers.map((member) => (
-                <article className="team-card" key={member.id}>
-                  <div className="team-card-top">
-                    <div className="team-avatar">
-                      {member.initials}
-                    </div>
-
-                    <span
-                      className={`team-status ${
-                        member.status === 'Online'
-                          ? 'team-status-online'
-                          : member.status === 'Away'
-                            ? 'team-status-away'
-                            : 'team-status-offline'
-                      }`}
-                    >
-                      <span className="team-status-dot"></span>
-                      {member.status}
-                    </span>
-                  </div>
-
-                  <div className="team-card-content">
-                    <h3>{member.name}</h3>
-
-                    <p className="team-role">
-                      {member.role}
-                    </p>
-
-                    <span className="team-department">
-                      {member.department}
-                    </span>
-                  </div>
-
-                  <div className="team-card-footer">
-                    <div className="team-meta">
-                      <span>▣</span>
-                      <span>
-                        {member.projects}{' '}
-                        {member.projects === 1
-                          ? 'project'
-                          : 'projects'}
-                      </span>
-                    </div>
-
-                    <button
-                      type="button"
-                      className="team-action"
-                      onClick={() => navigate('/messages')}
-                    >
-                      Message
-                      <span>→</span>
-                    </button>
-                  </div>
-                </article>
-              ))}
-            </section>
-          )}
-
-          <section className="static-info-card">
-            <div className="static-info-icon">♙</div>
-
-            <div>
-              <span className="section-label">TEAM WORKSPACE</span>
-
-              <h3>Stay connected with your team</h3>
-
-              <p>
-                This team section is currently a frontend workspace
-                preview. The member information shown here is static
-                demo content and is not connected to the backend.
-              </p>
-            </div>
-          </section>
+        <div>
+          <strong>TaskFlow</strong>
+          <span>Workspace</span>
         </div>
-      </main>
+      </div>
+
+      <div className="static-navbar-right">
+        <button
+          type="button"
+          className="navbar-icon-button"
+          onClick={() => navigate('/notifications')}
+          title="Notifications"
+          aria-label="Notifications"
+        >
+          ◉
+        </button>
+
+        <div className="navbar-divider"></div>
+
+        <div className="navbar-user">
+          <div className="navbar-avatar">{initial}</div>
+
+          <div className="navbar-user-info">
+            <strong>{displayName}</strong>
+            <span>Workspace member</span>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          className="navbar-logout"
+          onClick={handleLogout}
+          title="Log out"
+        >
+          <span>↪</span>
+          <span>Logout</span>
+        </button>
+      </div>
+    </header>
+
+    <div className="static-page">
+      <section className="static-page-hero">
+        <div>
+          <span className="section-label">WORKSPACE</span>
+
+          <h1>Team</h1>
+
+          <p>
+            View your workspace members and keep track of team activity.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          className="hero-action"
+          onClick={() => navigate('/messages')}
+        >
+          <span>◌</span>
+          Messages
+        </button>
+      </section>
+
+      <section className="team-toolbar">
+        <div className="team-search">
+          <span>⌕</span>
+
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search team members..."
+          />
+        </div>
+
+        <div className="page-filter-group">
+          {['All', 'Online', 'Away', 'Offline'].map((item) => (
+            <button
+              key={item}
+              type="button"
+              className={`filter-chip ${
+                filter === item ? 'active' : ''
+              }`}
+              onClick={() => setFilter(item)}
+            >
+              {item}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="team-grid">
+        {filteredMembers.length === 0 ? (
+          <div className="empty-state">
+            <div className="empty-icon">⌕</div>
+
+            <h3>No members found</h3>
+
+            <p>
+              Try a different name, role or availability filter.
+            </p>
+          </div>
+        ) : (
+          filteredMembers.map((member) => (
+            <article className="team-card" key={member.id}>
+              <div className="team-card-top">
+                <div className="team-avatar">
+                  {member.avatar}
+                </div>
+
+                <span
+                  className={`member-status ${
+                    member.status === 'Online'
+                      ? 'member-status-online'
+                      : member.status === 'Away'
+                      ? 'member-status-away'
+                      : 'member-status-offline'
+                  }`}
+                >
+                  <span></span>
+                  {member.status}
+                </span>
+              </div>
+
+              <div className="team-card-content">
+                <h3>{member.name}</h3>
+
+                <p>{member.role}</p>
+              </div>
+
+              <div className="team-card-footer">
+                <span>
+                  <strong>{member.tasks}</strong> active tasks
+                </span>
+
+                <button
+                  type="button"
+                  className="team-message-button"
+                  onClick={() => navigate('/messages')}
+                >
+                  Message →
+                </button>
+              </div>
+            </article>
+          ))
+        )}
+      </section>
+
+      <section className="static-info-card">
+        <div className="static-info-icon">♙</div>
+
+        <div>
+          <span className="section-label">DEMO WORKSPACE</span>
+
+          <h3>Team information</h3>
+
+          <p>
+            The team members shown here are static demo content.
+            This section is currently frontend-only and is not
+            connected to the backend.
+          </p>
+        </div>
+      </section>
     </div>
-  )
+  </main>
+</div>
+
+)
 }
