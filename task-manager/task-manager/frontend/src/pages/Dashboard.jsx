@@ -1,11 +1,17 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
+
 import Navbar from '../components/Navbar'
 import Sidebar from '../components/Sidebar'
 import TaskCard from '../components/TaskCard'
 import TaskForm from '../components/TaskForm'
+
 import { taskApi } from '../services/api'
-import { connectTaskSocket, disconnectTaskSocket } from '../services/socket'
+import {
+connectTaskSocket,
+disconnectTaskSocket,
+} from '../services/socket'
+
 import { useAuth } from '../context/AuthContext'
 
 const FILTERS = [
@@ -39,7 +45,6 @@ const loadTasks = useCallback(async () => {
 setLoading(true)
 setError('')
 
-```
 try {
   const { data } = await taskApi.getAll()
   setTasks(data)
@@ -48,7 +53,6 @@ try {
 } finally {
   setLoading(false)
 }
-```
 
 }, [])
 
@@ -59,13 +63,16 @@ loadTasks()
 useEffect(() => {
 if (!user) return
 
-```
 connectTaskSocket(
   user.id,
   (event) => {
     setTasks((current) => {
       if (event.type === 'CREATED') {
-        if (current.some((task) => task.id === event.task.id)) {
+        if (
+          current.some(
+            (task) => task.id === event.task.id
+          )
+        ) {
           return current
         }
 
@@ -74,12 +81,16 @@ connectTaskSocket(
 
       if (event.type === 'UPDATED') {
         return current.map((task) =>
-          task.id === event.task.id ? event.task : task
+          task.id === event.task.id
+            ? event.task
+            : task
         )
       }
 
       if (event.type === 'DELETED') {
-        return current.filter((task) => task.id !== event.taskId)
+        return current.filter(
+          (task) => task.id !== event.taskId
+        )
       }
 
       return current
@@ -89,7 +100,6 @@ connectTaskSocket(
 )
 
 return () => disconnectTaskSocket()
-```
 
 }, [user])
 
@@ -104,16 +114,23 @@ setShowForm(true)
 }
 
 const handleSubmit = async (formData) => {
-try {
-if (editingTask) {
-const { data } = await taskApi.update(editingTask.id, formData)
+setError('')
 
-```
+try {
+  if (editingTask) {
+    const { data } = await taskApi.update(
+      editingTask.id,
+      formData
+    )
+
     setTasks((current) =>
-      current.map((task) => (task.id === data.id ? data : task))
+      current.map((task) =>
+        task.id === data.id ? data : task
+      )
     )
   } else {
     const { data } = await taskApi.create(formData)
+
     setTasks((current) => [data, ...current])
   }
 
@@ -122,14 +139,14 @@ const { data } = await taskApi.update(editingTask.id, formData)
 } catch (err) {
   setError('Could not save task')
 }
-```
 
 }
 
 const handleDelete = async (task) => {
-if (!window.confirm(`Delete "${task.title}"?`)) return
+if (!window.confirm(`Delete "${task.title}"?`)) {
+return
+}
 
-```
 try {
   await taskApi.remove(task.id)
 
@@ -139,7 +156,6 @@ try {
 } catch (err) {
   setError('Could not delete task')
 }
-```
 
 }
 
@@ -147,31 +163,40 @@ const handleToggleStatus = async (task) => {
 try {
 const nextStatus = NEXT_STATUS[task.status]
 
-```
   const { data } = await taskApi.update(task.id, {
     ...task,
     status: nextStatus,
   })
 
   setTasks((current) =>
-    current.map((item) => (item.id === data.id ? data : item))
+    current.map((item) =>
+      item.id === data.id ? data : item
+    )
   )
 } catch (err) {
   setError('Could not update task')
 }
-```
 
 }
 
 const totalTasks = tasks.length
-const todoTasks = tasks.filter((task) => task.status === 'TODO').length
+
+const todoTasks = tasks.filter(
+(task) => task.status === 'TODO'
+).length
+
 const progressTasks = tasks.filter(
 (task) => task.status === 'IN_PROGRESS'
 ).length
-const doneTasks = tasks.filter((task) => task.status === 'DONE').length
+
+const doneTasks = tasks.filter(
+(task) => task.status === 'DONE'
+).length
 
 const completion =
-totalTasks > 0 ? Math.round((doneTasks / totalTasks) * 100) : 0
+totalTasks > 0
+? Math.round((doneTasks / totalTasks) * 100)
+: 0
 
 const visibleTasks =
 filter === 'ALL'
@@ -180,22 +205,23 @@ filter === 'ALL'
 
 return ( <div className="app-layout"> <Sidebar />
 
-```
   <main className="main-content">
     <Navbar connected={connected} />
 
     <div className="dashboard-page">
       <section className="dashboard-hero">
         <div className="hero-content">
-          <span className="hero-badge">TASKFLOW WORKSPACE</span>
+          <span className="hero-badge">
+            TASKFLOW WORKSPACE
+          </span>
 
           <h2>
             Welcome back, {displayName} 👋
           </h2>
 
           <p>
-            Organize your work, track your progress and complete your
-            tasks one step at a time.
+            Organize your work, track your progress and
+            complete your tasks one step at a time.
           </p>
         </div>
 
@@ -212,7 +238,10 @@ return ( <div className="app-layout"> <Sidebar />
       <section className="overview-section">
         <div className="section-heading">
           <div>
-            <span className="section-label">OVERVIEW</span>
+            <span className="section-label">
+              OVERVIEW
+            </span>
+
             <h3>Your productivity</h3>
           </div>
 
@@ -224,6 +253,7 @@ return ( <div className="app-layout"> <Sidebar />
         <div className="stats-grid">
           <div className="stat-card stat-card-total">
             <div className="stat-icon">▣</div>
+
             <div>
               <span>Total Tasks</span>
               <strong>{totalTasks}</strong>
@@ -232,6 +262,7 @@ return ( <div className="app-layout"> <Sidebar />
 
           <div className="stat-card">
             <div className="stat-icon">○</div>
+
             <div>
               <span>To Do</span>
               <strong>{todoTasks}</strong>
@@ -240,6 +271,7 @@ return ( <div className="app-layout"> <Sidebar />
 
           <div className="stat-card">
             <div className="stat-icon">◐</div>
+
             <div>
               <span>In Progress</span>
               <strong>{progressTasks}</strong>
@@ -248,6 +280,7 @@ return ( <div className="app-layout"> <Sidebar />
 
           <div className="stat-card">
             <div className="stat-icon">✓</div>
+
             <div>
               <span>Completed</span>
               <strong>{doneTasks}</strong>
@@ -259,7 +292,10 @@ return ( <div className="app-layout"> <Sidebar />
       <section className="tasks-section">
         <div className="section-heading tasks-heading">
           <div>
-            <span className="section-label">WORKSPACE</span>
+            <span className="section-label">
+              WORKSPACE
+            </span>
+
             <h3>My Tasks</h3>
           </div>
 
@@ -290,11 +326,17 @@ return ( <div className="app-layout"> <Sidebar />
 
           <span className="task-count">
             {visibleTasks.length}{' '}
-            {visibleTasks.length === 1 ? 'task' : 'tasks'}
+            {visibleTasks.length === 1
+              ? 'task'
+              : 'tasks'}
           </span>
         </div>
 
-        {error && <div className="error-banner">{error}</div>}
+        {error && (
+          <div className="error-banner">
+            {error}
+          </div>
+        )}
 
         {loading ? (
           <div className="loading-state">
@@ -316,7 +358,8 @@ return ( <div className="app-layout"> <Sidebar />
             </h3>
 
             <p>
-              Create a task and start organizing your work.
+              Create a task and start organizing your
+              work.
             </p>
 
             <button
@@ -345,7 +388,10 @@ return ( <div className="app-layout"> <Sidebar />
       <section className="quick-section">
         <div className="section-heading">
           <div>
-            <span className="section-label">EXPLORE</span>
+            <span className="section-label">
+              EXPLORE
+            </span>
+
             <h3>Quick Sections</h3>
           </div>
         </div>
@@ -357,10 +403,16 @@ return ( <div className="app-layout"> <Sidebar />
             onClick={() => navigate('/projects')}
           >
             <div className="quick-card-icon">▣</div>
+
             <div>
               <h4>Projects</h4>
-              <p>Keep your projects organized in one place.</p>
+
+              <p>
+                Keep your projects organized in one
+                place.
+              </p>
             </div>
+
             <span className="quick-arrow">→</span>
           </button>
 
@@ -370,10 +422,15 @@ return ( <div className="app-layout"> <Sidebar />
             onClick={() => navigate('/team')}
           >
             <div className="quick-card-icon">♙</div>
+
             <div>
               <h4>Team</h4>
-              <p>View your team workspace and members.</p>
+
+              <p>
+                View your team workspace and members.
+              </p>
             </div>
+
             <span className="quick-arrow">→</span>
           </button>
 
@@ -383,10 +440,15 @@ return ( <div className="app-layout"> <Sidebar />
             onClick={() => navigate('/messages')}
           >
             <div className="quick-card-icon">◌</div>
+
             <div>
               <h4>Messages</h4>
-              <p>Stay connected with your workspace.</p>
+
+              <p>
+                Stay connected with your workspace.
+              </p>
             </div>
+
             <span className="quick-arrow">→</span>
           </button>
         </div>
@@ -394,18 +456,27 @@ return ( <div className="app-layout"> <Sidebar />
 
       <section className="productivity-section">
         <div className="productivity-content">
-          <span className="section-label">PRODUCTIVITY</span>
-          <h3>Stay focused. One task at a time.</h3>
+          <span className="section-label">
+            PRODUCTIVITY
+          </span>
+
+          <h3>
+            Stay focused. One task at a time.
+          </h3>
+
           <p>
-            Small progress every day can turn into big results.
-            Keep your priorities clear and keep moving forward.
+            Small progress every day can turn into big
+            results. Keep your priorities clear and keep
+            moving forward.
           </p>
         </div>
 
         <div className="productivity-progress">
           <div
             className="progress-circle"
-            style={{ '--progress': `${completion}%` }}
+            style={{
+              '--progress': `${completion}%`,
+            }}
           >
             <span>{completion}%</span>
           </div>
