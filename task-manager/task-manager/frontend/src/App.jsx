@@ -39,6 +39,8 @@ export default function App() {
   return (
     <AuthProvider>
       <Routes>
+
+        {/* Public routes */}
         <Route
           path="/"
           element={<RootRedirect />}
@@ -54,6 +56,7 @@ export default function App() {
           element={<Register />}
         />
 
+        {/* Main task workspace */}
         <Route
           path="/dashboard"
           element={
@@ -72,6 +75,7 @@ export default function App() {
           }
         />
 
+        {/* Frontend-only sections */}
         <Route
           path="/projects"
           element={
@@ -117,10 +121,12 @@ export default function App() {
           }
         />
 
+        {/* Unknown routes */}
         <Route
           path="*"
           element={<Navigate to="/" replace />}
         />
+
       </Routes>
     </AuthProvider>
   )
