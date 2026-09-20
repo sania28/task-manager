@@ -1,58 +1,36 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
 import { useAuth } from '../context/AuthContext'
 
 export default function Settings() {
-const { user } = useAuth()
+const { user, logout } = useAuth()
+const navigate = useNavigate()
 
 const displayName = user?.fullName || user?.name || 'User'
 const initial = displayName.charAt(0).toUpperCase()
 
-const [activeSection, setActiveSection] = useState('profile')
-
-const [fullName, setFullName] = useState(displayName)
+const [profileName, setProfileName] = useState(displayName)
 const [email, setEmail] = useState(user?.email || '')
+const [notifications, setNotifications] = useState(true)
+const [emailUpdates, setEmailUpdates] = useState(false)
+const [compactMode, setCompactMode] = useState(false)
+const [saved, setSaved] = useState(false)
 
-const [emailNotifications, setEmailNotifications] = useState(true)
-const [taskReminders, setTaskReminders] = useState(true)
-const [teamUpdates, setTeamUpdates] = useState(false)
-
-const [theme, setTheme] = useState('dark')
-
-const sections = [
-{
-id: 'profile',
-icon: '◉',
-label: 'Profile',
-description: 'Manage your account details',
-},
-{
-id: 'notifications',
-icon: '◉',
-label: 'Notifications',
-description: 'Control your notifications',
-},
-{
-id: 'appearance',
-icon: '◐',
-label: 'Appearance',
-description: 'Customize your workspace',
-},
-{
-id: 'security',
-icon: '◆',
-label: 'Security',
-description: 'Manage account security',
-},
-]
+const handleLogout = () => {
+logout()
+navigate('/login')
+}
 
 const handleSave = (e) => {
 e.preventDefault()
 
 ```
-window.alert(
-  'Settings are currently saved only in this frontend preview.'
-)
+setSaved(true)
+
+setTimeout(() => {
+  setSaved(false)
+}, 2500)
 ```
 
 }
@@ -62,359 +40,284 @@ return ( <div className="app-layout"> <Sidebar />
 ```
   <main className="main-content">
     <header className="static-navbar">
-      <div>
-        <div className="static-navbar-label">TASKFLOW WORKSPACE</div>
-        <h1>Settings</h1>
-      </div>
-
-      <div className="static-navbar-user">
-        <div className="navbar-avatar">{initial}</div>
+      <div className="static-navbar-left">
+        <div className="static-brand-mark">T</div>
 
         <div>
-          <strong>{displayName}</strong>
-          <span>Workspace member</span>
+          <strong>TaskFlow</strong>
+          <span>Workspace</span>
         </div>
+      </div>
+
+      <div className="static-navbar-right">
+        <button
+          type="button"
+          className="navbar-icon-button"
+          onClick={() => navigate('/notifications')}
+          title="Notifications"
+          aria-label="Notifications"
+        >
+          ◉
+        </button>
+
+        <div className="navbar-divider"></div>
+
+        <div className="navbar-user">
+          <div className="navbar-avatar">{initial}</div>
+
+          <div className="navbar-user-info">
+            <strong>{displayName}</strong>
+            <span>Workspace member</span>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          className="navbar-logout"
+          onClick={handleLogout}
+          title="Log out"
+        >
+          <span>↪</span>
+          <span>Logout</span>
+        </button>
       </div>
     </header>
 
-    <div className="static-page settings-page">
-      {/* Intro */}
-      <section className="static-page-hero settings-hero">
+    <div className="static-page">
+      <section className="static-page-hero">
         <div>
-          <span className="section-label">PREFERENCES</span>
+          <span className="section-label">WORKSPACE</span>
 
-          <h2>Workspace settings</h2>
+          <h1>Settings</h1>
 
           <p>
-            Manage your profile, notifications and workspace
-            preferences from one place.
+            Manage your profile and customize your TaskFlow workspace.
           </p>
         </div>
-
-        <span className="demo-badge">Frontend Preview</span>
       </section>
 
-      {/* Settings Layout */}
-      <section className="settings-layout">
-        {/* Settings Navigation */}
-        <aside className="settings-sidebar">
-          <div className="settings-sidebar-title">
-            <span>SETTINGS</span>
+      {saved && (
+        <div className="settings-success">
+          <span>✓</span>
+          Settings updated for this session.
+        </div>
+      )}
+
+      <div className="settings-layout">
+        <section className="settings-card">
+          <div className="settings-card-header">
+            <div className="settings-card-icon">◉</div>
+
+            <div>
+              <span className="section-label">PROFILE</span>
+              <h3>Personal information</h3>
+              <p>
+                Update the basic information displayed in your workspace.
+              </p>
+            </div>
           </div>
 
-          <nav className="settings-nav">
-            {sections.map((section) => (
-              <button
-                key={section.id}
-                type="button"
-                className={`settings-nav-item ${
-                  activeSection === section.id ? 'active' : ''
-                }`}
-                onClick={() => setActiveSection(section.id)}
-              >
-                <span className="settings-nav-icon">
-                  {section.icon}
-                </span>
-
-                <span>
-                  <strong>{section.label}</strong>
-                  <small>{section.description}</small>
-                </span>
-
-                <span className="settings-nav-arrow">→</span>
-              </button>
-            ))}
-          </nav>
-        </aside>
-
-        {/* Settings Content */}
-        <div className="settings-content">
-          {activeSection === 'profile' && (
-            <form onSubmit={handleSave}>
-              <div className="settings-card">
-                <div className="settings-card-header">
-                  <div>
-                    <span className="section-label">ACCOUNT</span>
-                    <h3>Profile information</h3>
-                    <p>
-                      Update the information displayed on your
-                      TaskFlow workspace.
-                    </p>
-                  </div>
-
-                  <div className="settings-profile-avatar">
-                    {initial}
-                  </div>
-                </div>
-
-                <div className="settings-form-grid">
-                  <div className="form-group">
-                    <label htmlFor="settings-name">
-                      Full name
-                    </label>
-
-                    <input
-                      id="settings-name"
-                      type="text"
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      placeholder="Your full name"
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="settings-email">
-                      Email address
-                    </label>
-
-                    <input
-                      id="settings-email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="you@example.com"
-                    />
-                  </div>
-                </div>
-
-                <div className="settings-readonly-box">
-                  <span>ACCOUNT STATUS</span>
-
-                  <div>
-                    <span className="settings-online-dot"></span>
-                    <strong>Active account</strong>
-                  </div>
-                </div>
-
-                <div className="settings-card-actions">
-                  <button
-                    type="submit"
-                    className="btn btn-primary"
-                  >
-                    Save changes
-                  </button>
-                </div>
-              </div>
-            </form>
-          )}
-
-          {activeSection === 'notifications' && (
-            <div className="settings-card">
-              <div className="settings-card-header">
-                <div>
-                  <span className="section-label">
-                    NOTIFICATIONS
-                  </span>
-
-                  <h3>Notification preferences</h3>
-
-                  <p>
-                    Choose which updates you want to receive.
-                  </p>
-                </div>
+          <form onSubmit={handleSave}>
+            <div className="settings-avatar-row">
+              <div className="settings-large-avatar">
+                {profileName.charAt(0).toUpperCase() || initial}
               </div>
 
-              <div className="settings-options">
-                <label className="settings-option">
-                  <div>
-                    <strong>Email notifications</strong>
-                    <p>
-                      Receive important workspace updates by email.
-                    </p>
-                  </div>
-
-                  <input
-                    type="checkbox"
-                    checked={emailNotifications}
-                    onChange={(e) =>
-                      setEmailNotifications(e.target.checked)
-                    }
-                  />
-
-                  <span className="toggle-switch"></span>
-                </label>
-
-                <label className="settings-option">
-                  <div>
-                    <strong>Task reminders</strong>
-                    <p>
-                      Get reminders about upcoming task deadlines.
-                    </p>
-                  </div>
-
-                  <input
-                    type="checkbox"
-                    checked={taskReminders}
-                    onChange={(e) =>
-                      setTaskReminders(e.target.checked)
-                    }
-                  />
-
-                  <span className="toggle-switch"></span>
-                </label>
-
-                <label className="settings-option">
-                  <div>
-                    <strong>Team updates</strong>
-                    <p>
-                      Receive updates when your team activity changes.
-                    </p>
-                  </div>
-
-                  <input
-                    type="checkbox"
-                    checked={teamUpdates}
-                    onChange={(e) =>
-                      setTeamUpdates(e.target.checked)
-                    }
-                  />
-
-                  <span className="toggle-switch"></span>
-                </label>
+              <div>
+                <strong>{profileName || 'User'}</strong>
+                <span>Workspace member</span>
               </div>
             </div>
-          )}
 
-          {activeSection === 'appearance' && (
-            <div className="settings-card">
-              <div className="settings-card-header">
-                <div>
-                  <span className="section-label">APPEARANCE</span>
+            <div className="settings-form-grid">
+              <div className="form-group">
+                <label htmlFor="settings-name">
+                  Full name
+                </label>
 
-                  <h3>Workspace appearance</h3>
-
-                  <p>
-                    Choose how TaskFlow should look on your screen.
-                  </p>
-                </div>
+                <input
+                  id="settings-name"
+                  type="text"
+                  value={profileName}
+                  onChange={(e) => setProfileName(e.target.value)}
+                  placeholder="Enter your name"
+                />
               </div>
 
-              <div className="theme-options">
-                <button
-                  type="button"
-                  className={`theme-option ${
-                    theme === 'dark' ? 'active' : ''
-                  }`}
-                  onClick={() => setTheme('dark')}
-                >
-                  <div className="theme-preview theme-dark-preview">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                  </div>
+              <div className="form-group">
+                <label htmlFor="settings-email">
+                  Email address
+                </label>
 
-                  <div>
-                    <strong>Dark</strong>
-                    <small>TaskFlow dark workspace</small>
-                  </div>
-
-                  {theme === 'dark' && (
-                    <span className="theme-check">✓</span>
-                  )}
-                </button>
-
-                <button
-                  type="button"
-                  className={`theme-option ${
-                    theme === 'light' ? 'active' : ''
-                  }`}
-                  onClick={() => setTheme('light')}
-                >
-                  <div className="theme-preview theme-light-preview">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                  </div>
-
-                  <div>
-                    <strong>Light</strong>
-                    <small>Light workspace preview</small>
-                  </div>
-
-                  {theme === 'light' && (
-                    <span className="theme-check">✓</span>
-                  )}
-                </button>
+                <input
+                  id="settings-email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                />
               </div>
+            </div>
 
-              <div className="settings-demo-note">
-                <span>i</span>
+            <div className="settings-actions">
+              <button
+                type="submit"
+                className="btn btn-primary"
+              >
+                <span>✓</span>
+                Save Changes
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <section className="settings-card">
+          <div className="settings-card-header">
+            <div className="settings-card-icon">◉</div>
+
+            <div>
+              <span className="section-label">PREFERENCES</span>
+              <h3>Workspace preferences</h3>
+              <p>
+                Choose how you want your workspace experience to feel.
+              </p>
+            </div>
+          </div>
+
+          <div className="settings-options">
+            <div className="settings-option">
+              <div>
+                <strong>Task notifications</strong>
                 <p>
-                  Appearance selection is currently a frontend
-                  preview and does not change the global theme.
+                  Show notifications when task activity needs your
+                  attention.
                 </p>
               </div>
+
+              <button
+                type="button"
+                className={`toggle-switch ${
+                  notifications ? 'active' : ''
+                }`}
+                onClick={() =>
+                  setNotifications((current) => !current)
+                }
+                aria-label="Toggle task notifications"
+                aria-pressed={notifications}
+              >
+                <span></span>
+              </button>
             </div>
-          )}
 
-          {activeSection === 'security' && (
-            <div className="settings-card">
-              <div className="settings-card-header">
-                <div>
-                  <span className="section-label">SECURITY</span>
-
-                  <h3>Account security</h3>
-
-                  <p>
-                    Manage your password and account security
-                    preferences.
-                  </p>
-                </div>
+            <div className="settings-option">
+              <div>
+                <strong>Email updates</strong>
+                <p>
+                  Receive occasional updates about your workspace.
+                </p>
               </div>
 
-              <div className="security-item">
-                <div className="security-icon">◆</div>
-
-                <div>
-                  <strong>Password</strong>
-                  <p>
-                    Keep your account protected with a strong
-                    password.
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  className="outline-action"
-                  onClick={() =>
-                    window.alert(
-                      'Password management is not connected in this frontend preview.'
-                    )
-                  }
-                >
-                  Change
-                </button>
-              </div>
-
-              <div className="security-item">
-                <div className="security-icon">✓</div>
-
-                <div>
-                  <strong>Account protection</strong>
-                  <p>
-                    Your TaskFlow account is currently active.
-                  </p>
-                </div>
-
-                <span className="security-active">
-                  Active
-                </span>
-              </div>
+              <button
+                type="button"
+                className={`toggle-switch ${
+                  emailUpdates ? 'active' : ''
+                }`}
+                onClick={() =>
+                  setEmailUpdates((current) => !current)
+                }
+                aria-label="Toggle email updates"
+                aria-pressed={emailUpdates}
+              >
+                <span></span>
+              </button>
             </div>
-          )}
-        </div>
-      </section>
 
-      <section className="settings-info-banner">
-        <div className="settings-info-icon">✦</div>
+            <div className="settings-option">
+              <div>
+                <strong>Compact workspace</strong>
+                <p>
+                  Reduce spacing to display more content at once.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                className={`toggle-switch ${
+                  compactMode ? 'active' : ''
+                }`}
+                onClick={() =>
+                  setCompactMode((current) => !current)
+                }
+                aria-label="Toggle compact workspace"
+                aria-pressed={compactMode}
+              >
+                <span></span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section className="settings-card settings-security-card">
+          <div className="settings-card-header">
+            <div className="settings-card-icon">◆</div>
+
+            <div>
+              <span className="section-label">SECURITY</span>
+              <h3>Account security</h3>
+              <p>
+                Keep your account information and session under control.
+              </p>
+            </div>
+          </div>
+
+          <div className="security-row">
+            <div>
+              <strong>Password</strong>
+              <p>
+                Your password is managed through your TaskFlow account.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              className="outline-action"
+              onClick={() => navigate('/login')}
+            >
+              Log in again
+            </button>
+          </div>
+
+          <div className="security-row danger-row">
+            <div>
+              <strong>Sign out</strong>
+              <p>
+                End your current TaskFlow session on this device.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              className="danger-outline-button"
+              onClick={handleLogout}
+            >
+              Logout
+            </button>
+          </div>
+        </section>
+      </div>
+
+      <section className="static-info-card">
+        <div className="static-info-icon">⚙</div>
 
         <div>
-          <strong>Frontend settings preview</strong>
+          <span className="section-label">SETTINGS PREVIEW</span>
+
+          <h3>Frontend workspace preferences</h3>
 
           <p>
-            These preference controls are currently visual frontend
-            features. Your existing authentication and task
-            backend remain unchanged.
+            These settings are currently frontend-only. Changes are
+            reflected during the current session but are not saved to
+            the backend.
           </p>
         </div>
       </section>
