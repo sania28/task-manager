@@ -86,7 +86,6 @@ const initial = displayName.charAt(0).toUpperCase()
 const filteredConversations = conversations.filter((conversation) => {
 const value = search.trim().toLowerCase()
 
-```
 if (!value) return true
 
 return (
@@ -94,7 +93,6 @@ return (
   conversation.role.toLowerCase().includes(value) ||
   conversation.message.toLowerCase().includes(value)
 )
-```
 
 })
 
@@ -106,17 +104,14 @@ navigate('/login')
 const handleSend = (e) => {
 e.preventDefault()
 
-```
 if (!message.trim()) return
 
 setMessage('')
-```
 
 }
 
 return ( <div className="app-layout"> <Sidebar />
 
-```
   <main className="main-content">
     <header className="static-navbar">
       <div className="static-navbar-left">
@@ -373,7 +368,6 @@ return ( <div className="app-layout"> <Sidebar />
     </div>
   </main>
 </div>
-```
 
 )
 }
