@@ -21,11 +21,9 @@ setForm((current) => ({
 [e.target.name]: e.target.value,
 }))
 
-```
 if (error) {
   setError('')
 }
-```
 
 }
 
@@ -34,7 +32,6 @@ e.preventDefault()
 setError('')
 setLoading(true)
 
-```
 try {
   await register(form.fullName, form.email, form.password)
   navigate('/dashboard')
@@ -45,13 +42,12 @@ try {
 } finally {
   setLoading(false)
 }
-```
 
 }
 
 return ( <div className="auth-page"> <div className="auth-background-glow auth-glow-one"></div> <div className="auth-background-glow auth-glow-two"></div>
 
-```
+
   <div className="auth-card register-card">
     <div className="auth-brand">
       <div className="auth-logo">T</div>
@@ -171,7 +167,6 @@ return ( <div className="auth-page"> <div className="auth-background-glow auth-g
     </p>
   </div>
 </div>
-```
 
 )
 }
