@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
 import { useAuth } from '../context/AuthContext'
 
@@ -6,40 +7,40 @@ const conversations = [
 {
 id: 1,
 name: 'Alex Morgan',
-role: 'Product Manager',
+role: 'Frontend Developer',
 initials: 'AM',
 status: 'Online',
-lastMessage: 'The project timeline looks good.',
+message: 'The dashboard design looks great!',
 time: '10:42 AM',
 unread: 2,
 },
 {
 id: 2,
-name: 'Sarah Wilson',
+name: 'Maya Patel',
 role: 'UI/UX Designer',
-initials: 'SW',
+initials: 'MP',
 status: 'Online',
-lastMessage: 'I have updated the dashboard design.',
+message: 'I have updated the latest mockups.',
 time: '09:18 AM',
 unread: 1,
 },
 {
 id: 3,
-name: 'Daniel Carter',
-role: 'Frontend Developer',
-initials: 'DC',
+name: 'Daniel Lee',
+role: 'Backend Developer',
+initials: 'DL',
 status: 'Away',
-lastMessage: 'Can we review this task later?',
+message: 'The API changes are ready for review.',
 time: 'Yesterday',
 unread: 0,
 },
 {
 id: 4,
-name: 'Emma Davis',
-role: 'Backend Developer',
-initials: 'ED',
+name: 'Jordan Kim',
+role: 'Product Manager',
+initials: 'JK',
 status: 'Offline',
-lastMessage: 'API changes are ready for review.',
+message: 'Let us discuss the project timeline.',
 time: 'Yesterday',
 unread: 0,
 },
@@ -49,41 +50,58 @@ const demoMessages = [
 {
 id: 1,
 sender: 'Alex Morgan',
-text: 'Hey! How is the project going?',
-time: '10:38 AM',
+text: 'Hey! How is the TaskFlow dashboard coming along?',
+time: '10:35 AM',
 own: false,
 },
 {
 id: 2,
 sender: 'You',
-text: 'Going well. I am working on the remaining tasks.',
-time: '10:40 AM',
+text: 'It is coming together nicely. I am finishing the UI now.',
+time: '10:38 AM',
 own: true,
 },
 {
 id: 3,
 sender: 'Alex Morgan',
-text: 'Great! The project timeline looks good.',
+text: 'Nice! The new layout looks clean and easy to use.',
 time: '10:42 AM',
 own: false,
 },
 ]
 
 export default function Messages() {
-const { user } = useAuth()
+const { user, logout } = useAuth()
+const navigate = useNavigate()
 
 const [selectedConversation, setSelectedConversation] = useState(
 conversations[0]
 )
-const [message, setMessage] = useState('')
 const [search, setSearch] = useState('')
+const [message, setMessage] = useState('')
 
 const displayName = user?.fullName || user?.name || 'User'
 const initial = displayName.charAt(0).toUpperCase()
 
-const filteredConversations = conversations.filter((conversation) =>
-conversation.name.toLowerCase().includes(search.toLowerCase())
+const filteredConversations = conversations.filter((conversation) => {
+const value = search.trim().toLowerCase()
+
+```
+if (!value) return true
+
+return (
+  conversation.name.toLowerCase().includes(value) ||
+  conversation.role.toLowerCase().includes(value) ||
+  conversation.message.toLowerCase().includes(value)
 )
+```
+
+})
+
+const handleLogout = () => {
+logout()
+navigate('/login')
+}
 
 const handleSend = (e) => {
 e.preventDefault()
@@ -92,10 +110,6 @@ e.preventDefault()
 if (!message.trim()) return
 
 setMessage('')
-
-window.alert(
-  'Sending messages is currently a frontend demo feature.'
-)
 ```
 
 }
@@ -105,59 +119,94 @@ return ( <div className="app-layout"> <Sidebar />
 ```
   <main className="main-content">
     <header className="static-navbar">
-      <div>
-        <div className="static-navbar-label">TASKFLOW WORKSPACE</div>
-        <h1>Messages</h1>
-      </div>
-
-      <div className="static-navbar-user">
-        <div className="navbar-avatar">{initial}</div>
+      <div className="static-navbar-left">
+        <div className="static-brand-mark">T</div>
 
         <div>
-          <strong>{displayName}</strong>
-          <span>Workspace member</span>
+          <strong>TaskFlow</strong>
+          <span>Workspace</span>
         </div>
+      </div>
+
+      <div className="static-navbar-right">
+        <button
+          type="button"
+          className="navbar-icon-button"
+          onClick={() => navigate('/notifications')}
+          title="Notifications"
+          aria-label="Notifications"
+        >
+          ◉
+        </button>
+
+        <div className="navbar-divider"></div>
+
+        <div className="navbar-user">
+          <div className="navbar-avatar">{initial}</div>
+
+          <div className="navbar-user-info">
+            <strong>{displayName}</strong>
+            <span>Workspace member</span>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          className="navbar-logout"
+          onClick={handleLogout}
+          title="Log out"
+        >
+          <span>↪</span>
+          <span>Logout</span>
+        </button>
       </div>
     </header>
 
-    <div className="static-page messages-page">
-      <section className="static-page-hero messages-hero">
+    <div className="static-page">
+      <section className="static-page-hero messages-page-hero">
         <div>
-          <span className="section-label">COMMUNICATION</span>
+          <span className="section-label">WORKSPACE</span>
 
-          <h2>Stay connected with your team</h2>
+          <h1>Messages</h1>
 
           <p>
-            Keep conversations, updates and team communication in
-            one simple workspace.
+            Stay connected with your workspace and keep conversations
+            organized.
           </p>
         </div>
 
-        <span className="demo-badge">Frontend Preview</span>
+        <button
+          type="button"
+          className="hero-action"
+          onClick={() => navigate('/team')}
+        >
+          <span>♙</span>
+          View Team
+        </button>
       </section>
 
       <section className="messages-workspace">
-        {/* Conversation List */}
-        <aside className="conversation-sidebar">
-          <div className="conversation-header">
+        <aside className="messages-sidebar">
+          <div className="messages-sidebar-header">
             <div>
               <span className="section-label">INBOX</span>
               <h3>Conversations</h3>
             </div>
 
-            <span className="conversation-count">
+            <span className="messages-count">
               {conversations.length}
             </span>
           </div>
 
-          <div className="conversation-search">
+          <div className="messages-search">
             <span>⌕</span>
 
             <input
-              type="text"
+              type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search people..."
+              placeholder="Search conversations..."
+              aria-label="Search conversations"
             />
           </div>
 
@@ -170,8 +219,8 @@ return ( <div className="app-layout"> <Sidebar />
             ) : (
               filteredConversations.map((conversation) => (
                 <button
-                  key={conversation.id}
                   type="button"
+                  key={conversation.id}
                   className={`conversation-item ${
                     selectedConversation.id === conversation.id
                       ? 'active'
@@ -185,48 +234,55 @@ return ( <div className="app-layout"> <Sidebar />
                     {conversation.initials}
 
                     <span
-                      className={`conversation-status-dot ${conversation.status
-                        .toLowerCase()
-                        .replace(' ', '-')}`}
+                      className={`conversation-status ${
+                        conversation.status === 'Online'
+                          ? 'online'
+                          : conversation.status === 'Away'
+                            ? 'away'
+                            : 'offline'
+                      }`}
                     ></span>
                   </div>
 
                   <div className="conversation-content">
-                    <div className="conversation-name-row">
+                    <div className="conversation-top">
                       <strong>{conversation.name}</strong>
                       <small>{conversation.time}</small>
                     </div>
 
-                    <p>{conversation.lastMessage}</p>
-                  </div>
+                    <div className="conversation-bottom">
+                      <span>{conversation.message}</span>
 
-                  {conversation.unread > 0 && (
-                    <span className="unread-badge">
-                      {conversation.unread}
-                    </span>
-                  )}
+                      {conversation.unread > 0 && (
+                        <b>{conversation.unread}</b>
+                      )}
+                    </div>
+                  </div>
                 </button>
               ))
             )}
           </div>
         </aside>
 
-        {/* Chat Area */}
-        <div className="chat-panel">
-          <div className="chat-header">
+        <section className="chat-panel">
+          <header className="chat-header">
             <div className="chat-user">
-              <div className="chat-avatar">
+              <div className="conversation-avatar large">
                 {selectedConversation.initials}
 
                 <span
-                  className={`chat-status-dot ${selectedConversation.status
-                    .toLowerCase()
-                    .replace(' ', '-')}`}
+                  className={`conversation-status ${
+                    selectedConversation.status === 'Online'
+                      ? 'online'
+                      : selectedConversation.status === 'Away'
+                        ? 'away'
+                        : 'offline'
+                  }`}
                 ></span>
               </div>
 
               <div>
-                <strong>{selectedConversation.name}</strong>
+                <h3>{selectedConversation.name}</h3>
                 <span>
                   {selectedConversation.status} ·{' '}
                   {selectedConversation.role}
@@ -236,18 +292,14 @@ return ( <div className="app-layout"> <Sidebar />
 
             <button
               type="button"
-              className="chat-more-button"
-              title="More options"
-              aria-label="More options"
-              onClick={() =>
-                window.alert(
-                  'Conversation options are available in the frontend preview.'
-                )
-              }
+              className="navbar-icon-button"
+              title="View team"
+              aria-label="View team"
+              onClick={() => navigate('/team')}
             >
-              ⋮
+              ♙
             </button>
-          </div>
+          </header>
 
           <div className="chat-messages">
             <div className="chat-date-divider">
@@ -262,54 +314,60 @@ return ( <div className="app-layout"> <Sidebar />
                 }`}
               >
                 {!item.own && (
-                  <div className="message-avatar">
+                  <div className="chat-message-avatar">
                     {selectedConversation.initials}
                   </div>
                 )}
 
-                <div className="message-content">
-                  <div className="message-bubble">
+                <div className="chat-message-content">
+                  <div className="chat-bubble">
                     {item.text}
                   </div>
 
-                  <span className="message-time">
-                    {item.time}
-                  </span>
+                  <small>{item.time}</small>
                 </div>
               </div>
             ))}
           </div>
 
-          <form className="message-composer" onSubmit={handleSend}>
-            <button
-              type="button"
-              className="composer-button"
-              title="Attach file"
-              aria-label="Attach file"
-              onClick={() =>
-                window.alert(
-                  'File attachments are not connected in this frontend preview.'
-                )
-              }
-            >
-              +
-            </button>
-
+          <form
+            className="chat-input-area"
+            onSubmit={handleSend}
+          >
             <input
               type="text"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Write a message..."
+              aria-label="Write a message"
             />
 
             <button
               type="submit"
-              className="send-message-button"
+              className="chat-send-button"
+              disabled={!message.trim()}
+              title="Send message"
               aria-label="Send message"
             >
               →
             </button>
           </form>
+        </section>
+      </section>
+
+      <section className="static-info-card">
+        <div className="static-info-icon">◌</div>
+
+        <div>
+          <span className="section-label">MESSAGING WORKSPACE</span>
+
+          <h3>Keep conversations in one place</h3>
+
+          <p>
+            This messages section is currently a frontend demo.
+            Conversations and messages shown here are static and are
+            not connected to the backend.
+          </p>
         </div>
       </section>
     </div>
