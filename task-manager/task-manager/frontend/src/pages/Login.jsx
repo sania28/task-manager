@@ -141,7 +141,6 @@ return ( <div className="auth-page"> <div className="auth-background-glow auth-g
     </p>
   </div>
 </div>
-```
 
 )
 }
