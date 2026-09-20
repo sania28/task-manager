@@ -8,17 +8,29 @@ priority: 'MEDIUM',
 dueDate: '',
 }
 
-export default function TaskForm({ initialTask, onSubmit, onCancel }) {
+export default function TaskForm({
+initialTask,
+onSubmit,
+onCancel,
+}) {
 const [form, setForm] = useState(
-initialTask ? { ...emptyForm, ...initialTask } : emptyForm
+initialTask
+? {
+...emptyForm,
+...initialTask,
+dueDate: initialTask.dueDate
+? String(initialTask.dueDate).slice(0, 10)
+: '',
+}
+: emptyForm
 )
+
 const [error, setError] = useState('')
 const [submitting, setSubmitting] = useState(false)
 
 const handleChange = (e) => {
 const { name, value } = e.target
 
-```
 setForm((current) => ({
   ...current,
   [name]: value,
@@ -27,14 +39,12 @@ setForm((current) => ({
 if (error) {
   setError('')
 }
-```
 
 }
 
 const handleSubmit = async (e) => {
 e.preventDefault()
 
-```
 if (!form.title.trim()) {
   setError('Task title is required')
   return
@@ -45,17 +55,21 @@ setSubmitting(true)
 
 try {
   await onSubmit({
-    ...form,
     title: form.title.trim(),
-    description: form.description?.trim() || '',
+    description: form.description.trim(),
+    status: form.status,
+    priority: form.priority,
     dueDate: form.dueDate || null,
   })
 } catch (err) {
-  setError(err.response?.data?.error || 'Failed to save task')
+  setError(
+    err.response?.data?.error ||
+      err.message ||
+      'Failed to save task'
+  )
 } finally {
   setSubmitting(false)
 }
-```
 
 }
 
@@ -66,13 +80,13 @@ return ( <div
 <div
 className="modal task-form-modal"
 onClick={(e) => e.stopPropagation()}
->
-{/* Modal Header */} <div className="task-form-header"> <div> <span className="task-form-eyebrow">
+> <div className="task-form-header"> <div> <span className="task-form-eyebrow">
 {initialTask ? 'UPDATE TASK' : 'NEW TASK'} </span>
 
-```
         <h3>
-          {initialTask ? 'Edit your task' : 'Create a new task'}
+          {initialTask
+            ? 'Edit your task'
+            : 'Create a new task'}
         </h3>
 
         <p>
@@ -92,7 +106,6 @@ onClick={(e) => e.stopPropagation()}
       </button>
     </div>
 
-    {/* Error */}
     {error && (
       <div className="error-banner form-error">
         <span>!</span>
@@ -101,7 +114,6 @@ onClick={(e) => e.stopPropagation()}
     )}
 
     <form onSubmit={handleSubmit}>
-      {/* Title */}
       <div className="form-group">
         <label htmlFor="task-title">
           Task title
@@ -120,7 +132,6 @@ onClick={(e) => e.stopPropagation()}
         />
       </div>
 
-      {/* Description */}
       <div className="form-group">
         <label htmlFor="task-description">
           Description
@@ -138,10 +149,11 @@ onClick={(e) => e.stopPropagation()}
         />
       </div>
 
-      {/* Status + Priority */}
       <div className="modal-row task-form-row">
         <div className="form-group">
-          <label htmlFor="task-status">Status</label>
+          <label htmlFor="task-status">
+            Status
+          </label>
 
           <div className="select-wrapper">
             <select
@@ -152,14 +164,18 @@ onClick={(e) => e.stopPropagation()}
               disabled={submitting}
             >
               <option value="TODO">To Do</option>
-              <option value="IN_PROGRESS">In Progress</option>
+              <option value="IN_PROGRESS">
+                In Progress
+              </option>
               <option value="DONE">Completed</option>
             </select>
           </div>
         </div>
 
         <div className="form-group">
-          <label htmlFor="task-priority">Priority</label>
+          <label htmlFor="task-priority">
+            Priority
+          </label>
 
           <div className="select-wrapper">
             <select
@@ -177,7 +193,6 @@ onClick={(e) => e.stopPropagation()}
         </div>
       </div>
 
-      {/* Due Date */}
       <div className="form-group">
         <label htmlFor="task-due-date">
           Due date
@@ -198,7 +213,6 @@ onClick={(e) => e.stopPropagation()}
         </div>
       </div>
 
-      {/* Actions */}
       <div className="modal-actions task-form-actions">
         <button
           type="button"
@@ -222,7 +236,9 @@ onClick={(e) => e.stopPropagation()}
           ) : (
             <>
               <span>✓</span>
-              {initialTask ? 'Update Task' : 'Create Task'}
+              {initialTask
+                ? 'Update Task'
+                : 'Create Task'}
             </>
           )}
         </button>
@@ -230,7 +246,6 @@ onClick={(e) => e.stopPropagation()}
     </form>
   </div>
 </div>
-```
 
 )
 }
