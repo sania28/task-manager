@@ -15,7 +15,6 @@ const initial = displayName.charAt(0).toUpperCase()
 
 return ( <nav className="navbar"> <div className="navbar-left"> <div className="mobile-brand"> <div className="navbar-logo">T</div>
 
-```
       <div className="navbar-brand-text">
         <strong>TaskFlow</strong>
         <span>Workspace</span>
@@ -33,7 +32,10 @@ return ( <nav className="navbar"> <div className="navbar-left"> <div className="
       }
     >
       <span className="status-dot"></span>
-      <span>{connected ? 'Live' : 'Connecting'}</span>
+
+      <span>
+        {connected ? 'Live' : 'Connecting'}
+      </span>
     </div>
   </div>
 
@@ -72,7 +74,6 @@ return ( <nav className="navbar"> <div className="navbar-left"> <div className="
     </button>
   </div>
 </nav>
-```
 
 )
 }
