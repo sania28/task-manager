@@ -25,19 +25,16 @@ navigate('/login')
 const handleSave = (e) => {
 e.preventDefault()
 
-```
 setSaved(true)
 
 setTimeout(() => {
   setSaved(false)
 }, 2500)
-```
 
 }
 
 return ( <div className="app-layout"> <Sidebar />
 
-```
   <main className="main-content">
     <header className="static-navbar">
       <div className="static-navbar-left">
@@ -324,7 +321,6 @@ return ( <div className="app-layout"> <Sidebar />
     </div>
   </main>
 </div>
-```
 
 )
 }
