@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
 import { useAuth } from '../context/AuthContext'
 
@@ -8,7 +9,7 @@ id: 1,
 type: 'task',
 icon: '✓',
 title: 'Task completed',
-message: 'A task in your workspace was marked as completed.',
+message: 'The task "Complete project documentation" was marked as completed.',
 time: '10 minutes ago',
 unread: true,
 },
@@ -17,54 +18,58 @@ id: 2,
 type: 'team',
 icon: '♙',
 title: 'New team activity',
-message: 'Your team has shared an update in the workspace.',
-time: '1 hour ago',
+message: 'Alex Morgan updated a task in the Website Redesign project.',
+time: '35 minutes ago',
 unread: true,
 },
 {
 id: 3,
-type: 'project',
-icon: '▣',
-title: 'Project progress updated',
-message: 'Website Redesign progress has been updated.',
-time: '3 hours ago',
+type: 'message',
+icon: '◌',
+title: 'New message',
+message: 'Maya Patel sent you a new message in the workspace.',
+time: '1 hour ago',
 unread: true,
 },
 {
 id: 4,
-type: 'reminder',
-icon: '◷',
-title: 'Task reminder',
-message: 'You have tasks that need your attention today.',
-time: 'Yesterday',
+type: 'task',
+icon: '▣',
+title: 'Task deadline approaching',
+message: 'The task "Prepare final presentation" is due tomorrow.',
+time: '3 hours ago',
 unread: false,
 },
 {
 id: 5,
-type: 'system',
-icon: '✦',
-title: 'Welcome to TaskFlow',
-message: 'Your workspace is ready. Start organizing your work.',
-time: '2 days ago',
+type: 'project',
+icon: '◆',
+title: 'Project update',
+message: 'The TaskFlow App project progress was updated to 45%.',
+time: 'Yesterday',
+unread: false,
+},
+{
+id: 6,
+type: 'team',
+icon: '♙',
+title: 'Team member activity',
+message: 'Daniel Lee joined the Backend Development workspace.',
+time: 'Yesterday',
 unread: false,
 },
 ]
 
-const filters = [
-{ id: 'all', label: 'All' },
-{ id: 'unread', label: 'Unread' },
-{ id: 'task', label: 'Tasks' },
-{ id: 'team', label: 'Team' },
-{ id: 'project', label: 'Projects' },
-]
+const filters = ['All', 'Unread', 'Tasks', 'Team', 'Messages']
 
 export default function Notifications() {
-const { user } = useAuth()
+const { user, logout } = useAuth()
+const navigate = useNavigate()
 
 const [notifications, setNotifications] = useState(
 initialNotifications
 )
-const [activeFilter, setActiveFilter] = useState('all')
+const [filter, setFilter] = useState('All')
 
 const displayName = user?.fullName || user?.name || 'User'
 const initial = displayName.charAt(0).toUpperCase()
@@ -73,18 +78,35 @@ const unreadCount = notifications.filter(
 (notification) => notification.unread
 ).length
 
-const filteredNotifications = notifications.filter((notification) => {
-if (activeFilter === 'all') return true
-
-```
-if (activeFilter === 'unread') {
-  return notification.unread
+const filteredNotifications = notifications.filter(
+(notification) => {
+if (filter === 'Unread') {
+return notification.unread
 }
 
-return notification.type === activeFilter
+```
+  if (filter === 'Tasks') {
+    return notification.type === 'task'
+  }
+
+  if (filter === 'Team') {
+    return notification.type === 'team'
+  }
+
+  if (filter === 'Messages') {
+    return notification.type === 'message'
+  }
+
+  return true
+}
 ```
 
-})
+)
+
+const handleLogout = () => {
+logout()
+navigate('/login')
+}
 
 const markAsRead = (id) => {
 setNotifications((current) =>
@@ -110,106 +132,88 @@ return ( <div className="app-layout"> <Sidebar />
 ```
   <main className="main-content">
     <header className="static-navbar">
-      <div>
-        <div className="static-navbar-label">TASKFLOW WORKSPACE</div>
-        <h1>Notifications</h1>
-      </div>
-
-      <div className="static-navbar-user">
-        <div className="navbar-avatar">{initial}</div>
+      <div className="static-navbar-left">
+        <div className="static-brand-mark">T</div>
 
         <div>
-          <strong>{displayName}</strong>
-          <span>Workspace member</span>
+          <strong>TaskFlow</strong>
+          <span>Workspace</span>
         </div>
+      </div>
+
+      <div className="static-navbar-right">
+        <button
+          type="button"
+          className="navbar-icon-button notification-navbar-active"
+          onClick={() => navigate('/notifications')}
+          title="Notifications"
+          aria-label="Notifications"
+        >
+          ◉
+        </button>
+
+        <div className="navbar-divider"></div>
+
+        <div className="navbar-user">
+          <div className="navbar-avatar">{initial}</div>
+
+          <div className="navbar-user-info">
+            <strong>{displayName}</strong>
+            <span>Workspace member</span>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          className="navbar-logout"
+          onClick={handleLogout}
+          title="Log out"
+        >
+          <span>↪</span>
+          <span>Logout</span>
+        </button>
       </div>
     </header>
 
-    <div className="static-page notifications-page">
-      {/* Hero */}
-      <section className="static-page-hero notifications-hero">
+    <div className="static-page">
+      <section className="static-page-hero">
         <div>
-          <span className="section-label">ACTIVITY CENTER</span>
+          <span className="section-label">WORKSPACE</span>
 
-          <h2>Stay up to date</h2>
+          <h1>Notifications</h1>
 
           <p>
-            Keep track of task activity, team updates and important
-            workspace events.
+            Keep track of important activity across your TaskFlow
+            workspace.
           </p>
         </div>
 
-        <div className="notification-header-actions">
-          <span className="unread-summary">
-            <strong>{unreadCount}</strong> unread
-          </span>
-
+        {unreadCount > 0 && (
           <button
             type="button"
-            className="outline-action"
+            className="hero-action"
             onClick={markAllAsRead}
           >
-            Mark all as read
+            <span>✓</span>
+            Mark all read
           </button>
-        </div>
+        )}
       </section>
 
-      {/* Summary */}
-      <section className="notification-summary-grid">
-        <div className="notification-summary-card">
-          <div className="notification-summary-icon">◉</div>
-
-          <div>
-            <span>Total notifications</span>
-            <strong>{notifications.length}</strong>
-          </div>
-        </div>
-
-        <div className="notification-summary-card">
-          <div className="notification-summary-icon">●</div>
-
-          <div>
-            <span>Unread</span>
-            <strong>{unreadCount}</strong>
-          </div>
-        </div>
-
-        <div className="notification-summary-card">
-          <div className="notification-summary-icon">✓</div>
-
-          <div>
-            <span>Read</span>
-            <strong>
-              {notifications.length - unreadCount}
-            </strong>
-          </div>
-        </div>
-      </section>
-
-      {/* Notification List */}
-      <section className="static-section">
-        <div className="section-heading notification-heading">
-          <div>
-            <span className="section-label">RECENT ACTIVITY</span>
-            <h3>Notifications</h3>
-          </div>
-
-          <span className="demo-badge">Frontend Preview</span>
-        </div>
-
-        <div className="notification-filters">
-          {filters.map((filter) => (
+      <section className="notifications-toolbar">
+        <div className="page-filter-group">
+          {filters.map((item) => (
             <button
-              key={filter.id}
+              key={item}
               type="button"
               className={`filter-chip ${
-                activeFilter === filter.id ? 'active' : ''
+                filter === item ? 'active' : ''
               }`}
-              onClick={() => setActiveFilter(filter.id)}
+              onClick={() => setFilter(item)}
             >
-              {filter.label}
+              {item}
 
-              {filter.id === 'unread' && unreadCount > 0 && (
+              {item === 'Unread' && unreadCount > 0 && (
                 <span className="filter-count">
                   {unreadCount}
                 </span>
@@ -218,35 +222,74 @@ return ( <div className="app-layout"> <Sidebar />
           ))}
         </div>
 
-        <div className="notifications-list">
-          {filteredNotifications.length === 0 ? (
-            <div className="notification-empty">
-              <div className="notification-empty-icon">✓</div>
+        <span className="task-count">
+          {filteredNotifications.length}{' '}
+          {filteredNotifications.length === 1
+            ? 'notification'
+            : 'notifications'}
+        </span>
+      </section>
 
-              <h3>You're all caught up</h3>
+      <section className="notifications-card">
+        <div className="notifications-card-header">
+          <div>
+            <span className="section-label">ACTIVITY</span>
 
-              <p>
-                There are no notifications in this category.
-              </p>
-            </div>
-          ) : (
-            filteredNotifications.map((notification) => (
+            <h3>
+              Recent notifications
+            </h3>
+          </div>
+
+          {unreadCount > 0 && (
+            <span className="unread-badge">
+              {unreadCount} unread
+            </span>
+          )}
+        </div>
+
+        {filteredNotifications.length === 0 ? (
+          <div className="notification-empty">
+            <div className="empty-icon">✓</div>
+
+            <h3>
+              {filter === 'Unread'
+                ? 'You are all caught up'
+                : 'No notifications'}
+            </h3>
+
+            <p>
+              There is nothing new to show in this section.
+            </p>
+
+            {filter !== 'All' && (
+              <button
+                type="button"
+                className="outline-action"
+                onClick={() => setFilter('All')}
+              >
+                View all notifications
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="notification-list">
+            {filteredNotifications.map((notification) => (
               <article
                 key={notification.id}
-                className={`notification-card ${
-                  notification.unread ? 'unread' : ''
+                className={`notification-item ${
+                  notification.unread ? 'is-unread' : ''
                 }`}
                 onClick={() => markAsRead(notification.id)}
               >
                 <div
-                  className={`notification-icon notification-${notification.type}`}
+                  className={`notification-icon notification-icon-${notification.type}`}
                 >
                   {notification.icon}
                 </div>
 
                 <div className="notification-content">
                   <div className="notification-title-row">
-                    <h3>{notification.title}</h3>
+                    <h4>{notification.title}</h4>
 
                     {notification.unread && (
                       <span className="notification-new">
@@ -263,28 +306,26 @@ return ( <div className="app-layout"> <Sidebar />
                 </div>
 
                 {notification.unread && (
-                  <span
-                    className="notification-unread-dot"
-                    title="Unread"
-                  ></span>
+                  <span className="notification-dot"></span>
                 )}
               </article>
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
 
-      {/* Info Banner */}
-      <section className="notification-info-banner">
-        <div className="notification-info-icon">✦</div>
+      <section className="static-info-card">
+        <div className="static-info-icon">◉</div>
 
         <div>
-          <strong>Activity center preview</strong>
+          <span className="section-label">NOTIFICATION CENTER</span>
+
+          <h3>Stay updated without losing focus</h3>
 
           <p>
-            Notification data shown here is static frontend demo
-            content. Your existing authentication and task
-            functionality remain connected to the backend.
+            This notification center is currently a frontend demo.
+            The activity shown here is static and is not connected to
+            the backend notification system.
           </p>
         </div>
       </section>
